@@ -1,5 +1,6 @@
 const question = document.getElementById("question");
 const choices = Array.from(document.getElementsByClassName("choice-text"));
+const image = Array.from(document.getElementsByClassName("image"))[0];
 const progressText = document.getElementById("progressText");
 const scoreText = document.getElementById("score");
 const progressBarFull = document.getElementById("progressBarFull");
@@ -13,38 +14,51 @@ let score = 0;
 let questionCounter = 0;
 let availableQuestions = [];
 
-let questions = [];
+var questionIndex = Math.floor(Math.random() * 71)*80;
+const bad = "https://isic-archive.com/api/v1/image?limit=80&offset=" + questionIndex + "&sort=name&sortdir=1&detail=false&filter=%7B%22operator%22%3A%22in%22%2C%22operands%22%3A%5B%7B%22identifier%22%3A%22meta.clinical.benign_malignant%22%2C%22type%22%3A%22string%22%7D%2C%5B%22malignant%22%5D%5D%7D&uid=1609555750696"
+var questionIndex = Math.floor(Math.random() * 667)*80;
+const good = "https://isic-archive.com/api/v1/image?limit=80&offset=" + questionIndex + "&sort=name&sortdir=1&detail=false&filter=%7B%22operator%22%3A%22in%22%2C%22operands%22%3A%5B%7B%22identifier%22%3A%22meta.clinical.benign_malignant%22%2C%22type%22%3A%22string%22%7D%2C%5B%22benign%22%5D%5D%7D&uid=1609555750696"
+const proxyurl = "https://cors-anywhere.herokuapp.com/";
 
-fetch("https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple")
+function get_questions(url, right_answer_index) {
+  return fetch(proxyurl + good)
   .then(res => {
     return res.json();
   })
   .then(loadedQuestions => {
-    console.log(loadedQuestions.results);
-    questions = loadedQuestions.results.map( loadedQuestion => {
+    console.log(loadedQuestions);
+    new_questions = loadedQuestions.map( loadedQuestion => {
       const formattedQuestion = {
-        question: loadedQuestion.question
+        question: "Benign or malignant?",
+        image: "https://isic-archive.com/api/v1/image/" + loadedQuestion["_id"] +"/thumbnail?height=553&width=1000"
       };
 
-      const answerChoices = [...loadedQuestion.incorrect_answers];
-      formattedQuestion.answer = Math.floor(Math.random()*3) + 1;
-      answerChoices.splice(formattedQuestion.answer - 1, 0, loadedQuestion.correct_answer);
-
+      const answerChoices = ["Benign","Malignant"];
+      formattedQuestion.answer = right_answer_index;
       answerChoices.forEach((choice, index) => {
         formattedQuestion["choice" + (index + 1)] = choice;
       })
-
       return formattedQuestion;
     });
-    startGame();
+    return new_questions;
   })
   .catch(err => {
     console.error(err);
   });
+}
+
+bad_questions = get_questions(good, 1);
+good_questions = get_questions(bad, 2);
+bad_questions.then((results_bad) => {
+  good_questions.then((results_good) => {
+    questions = results_good.concat(results_bad);
+    startGame();
+  })
+})
 
 // CONSTANTS 
 const CORRECT_BONUS = 10; 
-const MAX_QUESITONS = 3; 
+const MAX_QUESITONS = 10; 
 
 startGame = () => {
     questionCounter = 0;
@@ -76,6 +90,8 @@ getNewQuestion = () => {
         const number = choice.dataset["number"];
         choice.innerText = currentQuestion["choice" + number];
     });
+
+    image.src = currentQuestion.image
 
     availableQuestions.splice(questionIndex, 1);
 
