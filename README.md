@@ -1,8 +1,8 @@
 # Mole Training Quiz App
 
-Trivia Quiz gets mole images from [ISIC Archive](https://www.isic-archive.com/).
+This is the code for a basic quiz website focused on training people to differentiate malignant moles (melanoma or non melanoma cancer) from benign moles and skin spots. Mole images come from [ISIC Archive](https://www.isic-archive.com/).
 
-You can try it [here](https://moles.mathigatti.com/)
+You can try the website [here](https://moles.mathigatti.com/)
 
 ![](demo.jpg)
 
