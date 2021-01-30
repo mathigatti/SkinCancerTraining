@@ -6,6 +6,9 @@ You can try the website [here](https://moles.mathigatti.com/)
 
 ![](demo.jpg)
 
+## Disclaimer
+
+I haven't tested the website and I know nothing about skin cancer, don't take the website as a serious training.
 
 
 
